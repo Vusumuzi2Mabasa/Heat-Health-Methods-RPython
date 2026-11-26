@@ -1,0 +1,16 @@
+{
+  "author": "Vusumuzi Mabasa",
+  "seed": 20261126,
+  "replicates": 100,
+  "simulation_n": 1800,
+  "illustrative_n": 6000,
+  "gestational_weeks": [20, 36],
+  "exposure_reference_c": 25,
+  "heat_coefficients": [0.18, 0.08, 0.12, 0.04],
+  "scenarios": ["null", "moderate", "nonlinear", "exposure_error", "informative_missingness"],
+  "weather_start": "2019-01-01",
+  "weather_end": "2024-12-31",
+  "climate_model": "era5",
+  "target_max_monte_carlo_se": 0.05,
+  "scope": "Public reanalysis weather and entirely synthetic pregnancies, covariates and health outcomes; no Wits PHR participant data"
+}

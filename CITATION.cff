@@ -1,0 +1,11 @@
+cff-version: 1.2.0
+message: Please cite this simulation study if you use its code or results.
+title: Heat exposure and preterm birth across African settings
+type: software
+authors:
+  - family-names: Mabasa
+    given-names: Vusumuzi
+date-released: 2026-11-26
+version: 1.0.0
+license: MIT
+abstract: Methods simulation using public ERA5 weather and entirely synthetic pregnancy outcomes. No Wits PHR patient data are included.

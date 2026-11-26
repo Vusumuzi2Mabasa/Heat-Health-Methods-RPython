@@ -1,0 +1,29 @@
+file,variable,meaning,units_or_codes
+weather.csv,site,Illustrative location identifier,0 Johannesburg; 1 Durban; 2 Cape Town; 3 Harare; 4 Nairobi; 5 Abidjan
+weather.csv,date,Local daily weather date,ISO 8601 date
+weather.csv,tmax_c,ERA5 daily maximum air temperature,degrees Celsius
+weather.csv,tmin_c,ERA5 daily minimum air temperature,degrees Celsius
+weather.csv,rain_mm,ERA5 daily precipitation sum,millimetres
+illustrative_cohort.csv,id,Synthetic within-cohort identifier,zero based
+illustrative_cohort.csv,entry_day,Start of week 20 relative to 2019-01-01,integer days
+illustrative_cohort.csv,age_c,Simulated maternal age centred at 30 and divided by 10,decades
+illustrative_cohort.csv,smoking,Simulated smoking indicator,0 absent; 1 present
+illustrative_cohort.csv,deprivation,Simulated deprivation indicator,0 absent; 1 present
+illustrative_cohort.csv,personal_offset,Known-to-generator personal minus ambient temperature,degrees Celsius; zero outside exposure-error scenario
+illustrative_cohort.csv,birth_week,First simulated event interval or no preterm event,20 through 36 event; 37 no event through week 36
+illustrative_cohort.csv,missing_mask,Bit mask for unavailable interval exposures,bit k corresponds to week 20 plus k
+simulation_manifest.csv,replicate,Independent base cohort index,1 through 100
+simulation_manifest.csv,scenario,Within-replicate paired scenario,null; moderate; nonlinear; exposure_error; informative_missingness
+simulation_manifest.csv,truth,True log contrast for 30 versus 25 degrees in both windows,0 or 0.21 or 0.42
+landmark_design.csv,train,Membership in training partition,0 excluded from training; 1 included
+landmark_design.csv,outcome,Preterm outcome indicator; use only eligible partitions,0 no event before week 37; 1 event before week 37
+landmark_design.csv,x0,Intercept,one
+landmark_design.csv,x1,Centred age,decades
+landmark_design.csv,x2,Smoking,binary
+landmark_design.csv,x3,Deprivation,binary
+landmark_design.csv,x4,Temperature days 1 through 7 before week 28,degrees Celsius
+landmark_design.csv,x5,Temperature days 8 through 14 before week 28,degrees Celsius
+landmark_design.csv,x6,Log one plus mean rainfall days 1 through 7,log millimetres transformation
+landmark_design.csv,x7,Seasonal sine,period 365.25 days
+landmark_design.csv,x8,Seasonal cosine,period 365.25 days
+landmark_design.csv,x9,Year at landmark centred at 2022,years

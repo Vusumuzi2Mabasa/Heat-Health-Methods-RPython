@@ -1,0 +1,15 @@
+{
+  "issue": "pandas reserved NA parsing of the literal null scenario label; reader now disables default NA tokens",
+  "repairs": [
+    {
+      "file": "results/python_fits.csv",
+      "labels_restored": 300,
+      "numerical_changes": false
+    },
+    {
+      "file": "results/python_fits_coefficients.csv",
+      "labels_restored": 54,
+      "numerical_changes": false
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "passed": true,
+  "records_per_language": 30,
+  "scenarios": [
+    "null",
+    "moderate",
+    "nonlinear",
+    "exposure_error",
+    "informative_missingness"
+  ],
+  "maximum_absolute_differences": {
+    "estimate": 1.7605500515771588e-08,
+    "se": 1.4208949767335888e-06,
+    "loglik": 5.5706550483591855e-12
+  }
+}

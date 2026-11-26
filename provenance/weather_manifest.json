@@ -1,0 +1,64 @@
+{
+  "provider": "Open-Meteo Historical Weather API",
+  "model_requested": "era5",
+  "weather_type": "Gridded reanalysis estimates, not personal exposure or station observations",
+  "license": "CC BY 4.0; retain Open-Meteo and underlying ERA5 attribution",
+  "source_documentation": "https://open-meteo.com/en/docs/historical-weather-api",
+  "sites_are": "Illustrative city coordinates, not Wits PHR recruitment facilities",
+  "files": [
+    {
+      "site": "Johannesburg",
+      "url": "https://archive-api.open-meteo.com/v1/archive?latitude=-26.2041&longitude=28.0473&start_date=2019-01-01&end_date=2024-12-31&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&models=era5&timezone=Africa%2FJohannesburg",
+      "sha256": "d0d858c7d38b8d9e91ee5c7e90a15fd7e5c1c4a84adeff2b92b298fd211d52fe",
+      "bytes": 60955,
+      "latitude_returned": -26.25,
+      "longitude_returned": 28.0,
+      "timezone": "Africa/Johannesburg"
+    },
+    {
+      "site": "Durban",
+      "url": "https://archive-api.open-meteo.com/v1/archive?latitude=-29.8587&longitude=31.0218&start_date=2019-01-01&end_date=2024-12-31&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&models=era5&timezone=Africa%2FJohannesburg",
+      "sha256": "5f97c9767cf70b7bd346f026593ce07407efc0d6ba2a53f4bb084dd90e9089a7",
+      "bytes": 61919,
+      "latitude_returned": -29.75,
+      "longitude_returned": 31.0,
+      "timezone": "Africa/Johannesburg"
+    },
+    {
+      "site": "Cape_Town",
+      "url": "https://archive-api.open-meteo.com/v1/archive?latitude=-33.9249&longitude=18.4241&start_date=2019-01-01&end_date=2024-12-31&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&models=era5&timezone=Africa%2FJohannesburg",
+      "sha256": "0bc0d0121cecdeaad7b7a1ed094438e6aac5decb78fd3fd6d50a8159d311c382",
+      "bytes": 61285,
+      "latitude_returned": -33.75,
+      "longitude_returned": 18.5,
+      "timezone": "Africa/Johannesburg"
+    },
+    {
+      "site": "Harare",
+      "url": "https://archive-api.open-meteo.com/v1/archive?latitude=-17.8252&longitude=31.0335&start_date=2019-01-01&end_date=2024-12-31&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&models=era5&timezone=Africa%2FHarare",
+      "sha256": "7733daa39276a01905f4c682340c562da7d743a2689912cfd24f4994efd197f6",
+      "bytes": 61410,
+      "latitude_returned": -17.75,
+      "longitude_returned": 31.0,
+      "timezone": "Africa/Harare"
+    },
+    {
+      "site": "Nairobi",
+      "url": "https://archive-api.open-meteo.com/v1/archive?latitude=-1.2921&longitude=36.8219&start_date=2019-01-01&end_date=2024-12-31&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&models=era5&timezone=Africa%2FNairobi",
+      "sha256": "97e279881b3c090192407f78d31ad631f9f29680872d54e4d89be9463778a9c2",
+      "bytes": 61840,
+      "latitude_returned": -1.25,
+      "longitude_returned": 36.75,
+      "timezone": "Africa/Nairobi"
+    },
+    {
+      "site": "Abidjan",
+      "url": "https://archive-api.open-meteo.com/v1/archive?latitude=5.36&longitude=-4.0083&start_date=2019-01-01&end_date=2024-12-31&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum&models=era5&timezone=Africa%2FAbidjan",
+      "sha256": "453c43bc7a1ece3e1f1794253561948063ca867c9149b4411f101d80945b33f9",
+      "bytes": 62071,
+      "latitude_returned": 5.5,
+      "longitude_returned": -4.0,
+      "timezone": "Africa/Abidjan"
+    }
+  ]
+}

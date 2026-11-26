@@ -1,0 +1,13 @@
+.venv/
+work/
+cache/
+_working/
+*.log
+.nextflow*
+__pycache__/
+report/*.pdf
+data/pilot_manifest.csv
+data/smoke_manifest.csv
+results/pilot_*
+results/smoke_*
+!results/smoke_validation.json
