@@ -1,0 +1,17 @@
+{
+  "source_n": 6000,
+  "analysis_n": 6000,
+  "events37": 796,
+  "events34": 411,
+  "primary_missing_records": 0,
+  "duplicate_ids": 0,
+  "weather_rows": 13152,
+  "exposure_days": 14,
+  "heat_median": 25.3036,
+  "heat_q25": 23.2,
+  "heat_q75": 27.7643,
+  "entry_min": "2020-01-15",
+  "entry_max": "2024-06-30",
+  "site_labels_are": "Illustrative weather locations, not clinical recruitment sites",
+  "outcome_limitation": "Generator does not distinguish live birth from pregnancy loss; do not interpret as a validated obstetric preterm-birth endpoint"
+}

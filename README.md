@@ -1,314 +1,261 @@
-# Heat exposure and preterm birth across African settings
+# Maternal heat exposure and subsequent delivery before 37 weeks
 
-**A simulation study of delayed effects exposure uncertainty and predictive transportability**
+**An association analysis in R using a simulated pregnancy cohort**
 
-**Vusumuzi Mabasa · 26 November 2026**
+**Vusumuzi Mabasa | 26 November 2026**
 
-**Simulation study. Public weather with entirely synthetic pregnancies and outcomes.**
+**Public ERA5 weather with entirely simulated maternal characteristics and delivery outcomes.**
 
-[Word manuscript](report/Heat_Health_Manuscript.docx) · [Quarto manuscript source](report/Heat_Health_Manuscript.qmd) · [Results and validation](results) · [Workflow commands](workflow.txt)
+[Word manuscript](report/Heat_Health_Manuscript.docx) | [Quarto source](report/Heat_Health_Manuscript.qmd) | [R workflow](run_association.R) | [Association results](results/association) | [Original study archive](archive/methods-study-v1/README.md)
 
 ## Abstract
 
-**Background.** Heat and pregnancy research requires methods that respect gestational risk sets, delayed exposure effects and the distinction between association and prediction. This study evaluated such methods using public historical weather and entirely synthetic pregnancies.
+**Background.** Maternal heat exposure may be associated with pregnancy outcomes, but an association analysis requires a fixed exposure window, clearly defined endpoints and appropriate covariate adjustment. This study investigated early gestational heat and subsequent delivery in a synthetic cohort linked to public historical weather.
 
-**Methods.** ERA5 reanalysis weather from six African locations during 2019–2024 informed 100 independently seeded cohorts of 1,800 pregnancies. Five paired scenarios represented a null effect, a moderate heat effect, nonlinear delayed effects, unobserved personal exposure and outcome-dependent missingness. Complementary log-log weekly survival models were implemented independently in R and Python. An additional 6,000-pregnancy cohort supported week-28 prediction with maternal-only ridge logistic regression, weather-augmented ridge regression, Random Forest and gradient boosting. Temporal, geographic and combined test sets were held out.
+**Methods.** We analysed 6,000 synthetic pregnancies ongoing at gestational week 20. The primary exposure was mean daily maximum temperature during the 14 completed days before entry. The primary outcome was generated delivery during weeks 20-36, coded 1, versus no delivery event through week 36, coded 0. Data preprocessing, descriptive analysis, logistic regression and diagnostics were conducted in R. Adjusted odds ratios used HC3 sandwich standard errors. Tables were generated with gtsummary and rendered in Word using flextable.
 
-**Results.** All 1,500 fit records per language converged. The correctly specified nonlinear model had 5% null rejection and 97% interval coverage in the nonlinear scenario. R model AUCs ranged from 0.530 to 0.629 across held-out tests; this represents modest discrimination in the simulated prediction problem.
+**Results.** There were 796 events among 6,000 pregnancies (13.3%). The crude heat OR per five degrees C was 1.39 (95% CI 1.26-1.54), compared with adjusted OR 0.87 (95% CI 0.70-1.08; p = 0.207). Adjusted ORs were 1.15 (95% CI 1.07-1.22; p < 0.001) for age per five years, 1.41 (95% CI 1.16-1.70; p < 0.001) for smoking and 1.37 (95% CI 1.17-1.59; p < 0.001) for deprivation. The model converged without detected separation; sensitivity analyses are reported without replacing the primary fit.
 
-**Conclusions.** This is an implementation and performance study under known simulated mechanisms. It does not estimate clinical effects in African populations or validate an operational heat-warning system. Performance depends on exposure measurement, missingness and the prediction setting; additional model complexity does not guarantee better prediction.
+**Conclusion.** The crude positive heat association was not retained after full covariate adjustment in the primary linear model. Age, smoking and deprivation showed positive adjusted associations in this generated cohort. These results demonstrate an applied association analysis of simulated health data; they do not establish clinical effects or a protective effect of heat.
 
 ## Introduction
 
-Ambient heat is a relevant maternal and newborn health exposure. A systematic review reported associations between higher temperatures and adverse pregnancy outcomes, including preterm birth [1]. These findings motivate careful study designs; they do not establish the numerical parameters used in the present simulations. Wits Planetary Health Research describes programmes addressing heat, maternal health and early warning, including HEAT Center and Bio-HEAT [2,3]. This independent methodological portfolio study is motivated by those topics and has no affiliation with, access to, or validation against their participant data.
+Heat exposure is relevant to maternal and newborn health research. A systematic review reported associations between higher temperatures during pregnancy and outcomes including preterm birth [1]. Such evidence motivates careful exposure and endpoint definitions. A temperature measurement obtained before an observation period answers a different question from a whole-pregnancy average or a time-varying exposure series.
 
-Three statistical questions are distinguished. First, can a time-indexed model recover a known heat association without using exposure after delivery? Second, how does recovery change when ambient weather differs from personal exposure or when exposure records are selectively missing? Third, can information available at a pregnancy landmark predict later preterm delivery in different years and locations? A final explanatory exercise examines model-standardised risks under a hypothetical reduction in temperature. The study was designed to evaluate these questions rather than maximise the apparent performance of one algorithm.
+The present study uses a single synthetic cohort to examine an epidemiological association from data preparation through interpretation. Public ERA5 weather provides the environmental measurements, while all maternal characteristics and delivery outcomes are simulated. The analysis focuses on clinical questions, descriptive findings and covariate-adjusted estimates. The original statistical-methods experiment is preserved as a separate archived release and is not the subject of this manuscript.
+
+### Aim and objectives
+
+The aim was to investigate the association between heat exposure before week-20 entry and subsequent delivery before week 37 in a simulated pregnancy cohort.
+
+The objectives were to describe maternal characteristics, environmental exposure and delivery events; estimate unadjusted and adjusted heat associations; assess functional-form and other model assumptions; and examine prespecified exposure-window and adjustment sensitivities. Maternal age, smoking and deprivation associations were reported as secondary covariate findings. Delivery before week 34 was an exploratory secondary endpoint.
 
 ## Methods
 
-### Design and data provenance
+### Study design and data sources
 
-Daily maximum and minimum air temperature and precipitation were obtained through the Open-Meteo Historical Weather API with explicit ERA5 model selection [4]. The locations were Johannesburg, Durban, Cape Town, Harare, Nairobi and Abidjan. Each location contributed 2,192 consecutive days from 1 January 2019 to 31 December 2024, giving 13,152 site-days. API queries, source hashes, returned coordinates and time zones are retained in the provenance directory. The source is gridded reanalysis; it does not measure individual heat exposure. These illustrative city coordinates are not recruitment sites.
+This was an association analysis of 6,000 synthetic pregnancies assigned equally across six illustrative weather locations: Johannesburg, Durban, Cape Town, Harare, Nairobi and Abidjan. The locations are environmental reference points, not clinical recruitment sites. The cohort is not a representative sample of any country or maternity service.
 
-Checks required complete consecutive dates, finite temperatures and precipitation, minimum temperature no greater than maximum temperature, plausible temperature bounds and nonnegative rainfall. An initial ERA5-Land query returned unavailable precipitation; the final study therefore uses a consistent ERA5 product across all sites, without filling the missing weather values. Monthly weather summaries describe the exposure environment but are not evidence of changes in health outcomes.
+The existing source cohort was retained without regenerating outcomes. Its delivery intervals had been generated using gestational time, maternal characteristics and evolving weather exposure. Consequently, the baseline association evaluated here is not the same estimand as the generator's weekly heat coefficient. No parameters or participant records were changed to make the associations statistically significant.
 
-![Figure 1 Public historical weather used to generate exposure histories](figures/weather.png)
+Daily maximum temperature, minimum temperature and precipitation were obtained previously from ERA5 through the Open-Meteo Historical Weather API [2]. The saved panel covered 2019-2024 with 2,192 consecutive days per location and 13,152 site-days. Reanalysis represents gridded environmental estimates, not personal heat exposure. Health data and identifiers are entirely synthetic.
 
+### Preprocessing and quality assessment
 
-All participants, covariates and birth outcomes were generated synthetically. The original heat–pregnancy project was preserved in its separate directory. The present design does not reproduce patient data, recruitment or effect estimates from Wits PHR. No clinical records, names or participant identifiers are included. Original code and manuscript are authored by Vusumuzi Mabasa.
+R imported the source CSV files and verified unique participant identifiers and site-date keys. Checks covered valid binary covariates, age and generated delivery-week ranges, complete daily weather histories, finite measurements, ordered minimum and maximum temperatures, plausible temperature bounds and nonnegative precipitation. Source age was reconstructed in years as 30 plus ten times the stored centred-age variable. Binary smoking and deprivation were encoded as labelled factors, with No as reference; outcome coding remained 0 and 1.
 
-### Pregnancy risk sets and temporal ordering
+Exposure windows were linked by location and date. Direct summation of daily values in 60 distributed records independently checked the cumulative-sum implementation. Analysis-variable missingness was audited before selecting complete records. No duplicate, invalid or incomplete primary records were identified; no imputation or automatic outlier removal was performed. Event-interval start dates are structurally missing for non-events and were not predictors or complete-case selection variables.
 
-Each simulated cohort contained 1,800 pregnancies balanced across the six locations. Entry at the beginning of gestational week 20 was sampled between 15 January 2020 and 1 July 2024. Age followed a normal distribution with mean 29 and standard deviation 6 years, clipped to 18–44. Smoking and deprivation were independent Bernoulli variables with probabilities 0.15 and 0.40. Independence is a simplifying assumption rather than a claim about observed social patterns.
+| Preprocessing stage | N |
+| --- | --- |
+| Source synthetic pregnancies | 6000 |
+| Duplicate identifiers | 0 |
+| Outside prespecified age or event ranges | 0 |
+| Incomplete primary model records | 0 |
+| Included in primary analysis | 6000 |
+| Delivery before week 37 | 796 |
+| Delivery before week 34 | 411 |
 
-Follow-up comprised weekly intervals beginning at gestational weeks 20 through 36. A pregnancy contributed an interval only while undelivered; follow-up stopped at the first simulated delivery. Delivery by the end of week 36 was the event. Pregnancies with no earlier event were assigned week 37 for this simulation. Miscarriage, stillbirth, spontaneous versus indicated delivery and loss to follow-up were not modelled. The target population is therefore hypothetical pregnancies still ongoing at week 20, not all conceptions.
+The final two audit rows are outcome counts, not additional exclusions. The analysis dataset, data dictionary, missingness audit and cohort accounting are retained with the R outputs. All original result files and both source datasets were checked against the frozen archive.
 
-At interval entry on day $d$, two exposure windows used only previously completed days:
+### Exposure and outcome definitions
 
-$$
-T_{i0}(d)=\frac{1}{7}\sum_{j=1}^{7}T_{s_i}(d-j),\qquad
-T_{i1}(d)=\frac{1}{7}\sum_{j=8}^{14}T_{s_i}(d-j).
-$$
-
-Here $T_s$ is daily maximum temperature at location $s$. Mean precipitation over days 1–7, calendar-year trend and annual sine and cosine terms were included as covariates. Person-week records after delivery were excluded. These rules avoid using a whole-pregnancy exposure average whose duration is determined by delivery time.
-
-### Generating model and estimand
-
-Let $h_{ig}$ denote the probability of delivery in week $g$, conditional on remaining undelivered. The generating model was
-
-$$
-\log[-\log(1-h_{ig})]=\alpha_{s_i}+0.84u_g+\gamma^\top X_{ig}
-+\sum_{\ell=0}^{1}\{\beta_{\ell 1}z_{i\ell g}+\beta_{\ell 2}z_{i\ell g}^{2}\}.
-$$
+Let $d_i$ be the date of week-20 entry and $T_{s_i}(d)$ the daily maximum temperature at the assigned location. The primary exposure was
 
 $$
-u_g=(g-28)/4,\qquad z_{i\ell g}=\max(T_{i\ell g}-25,0)/5.
+H_i=\frac{1}{14}\sum_{j=1}^{14}T_{s_i}(d_i-j).
 $$
 
-The reference intercept was −5.62, with five fixed site offsets 0.10, −0.10, 0.05, −0.05 and 0.12. Covariate coefficients were 0.12 for age centred at 30 and divided by 10, 0.40 for smoking, 0.25 for deprivation, −0.025 for log-transformed mean rainfall, 0.15 and −0.10 for seasonal sine and cosine, and 0.025 per calendar year centred at 2022. A quadratic gestational-age term was estimated with generating coefficient zero. Parameters were prespecified illustrative assumptions; neither prevalence nor heat effects were estimated from a patient cohort.
+The entry day was excluded, and every exposure date preceded every possible generated delivery interval. This fixed window avoids defining exposure duration using the subsequent delivery date. Two seven-day subwindows were examined only as sensitivity analyses.
 
-The nonlinear heat coefficients were $(0.18,0.08,0.12,0.04)$. They were halved in the moderate scenario and set to zero in the null scenario. The primary estimand compared 30°C with 25°C in **both** completed exposure windows:
+The primary outcome was $Y_i=1$ for a generated delivery interval beginning at gestational week 20 through 36 and $Y_i=0$ when no delivery occurred before week 37. All pregnancies were ongoing at entry and were completely observed for this generated endpoint. The stored value 37 denotes the absence of an earlier event; it is not an exact gestational age for term deliveries and was not analysed as a continuous delivery age.
 
-$$
-\theta=\beta_{01}+\beta_{02}+\beta_{11}+\beta_{12},\qquad
-H=\exp(\theta).
-$$
+The generator does not distinguish live births from pregnancy losses or spontaneous from indicated delivery. The endpoint should therefore be read as generated delivery before week 37, rather than a clinically validated preterm-birth diagnosis. The exploratory endpoint used a threshold before week 34 under the same limitations.
 
-True $\theta$ was 0, 0.21 or 0.42, corresponding to $H=1$, 1.234 or 1.522. Under the complementary log-log model, $H$ is the ratio of underlying interval cumulative hazards conditional on covariates. It is not a cumulative preterm-birth risk ratio. The fixed 25°C threshold is an illustrative basis knot, not a demonstrated clinical threshold or a location-specific adaptation threshold.
+### Association models
 
-### Scenarios and model comparisons
-
-One hundred base cohorts were generated with independent seeds; the same underlying draws were reused across the five scenarios within each replicate. Consequently, there are 500 scenario datasets but 100 independent base replicates. All scenarios share a fixed historical weather panel. The exposure-error scenario added a person-specific $U_i\sim N(0,2^2)$ degrees to both ambient windows when generating outcomes. The analyst observed ambient weather only; the oracle knew $U_i$. This is a stable personal-versus-ambient offset, resembling Berkson-type exposure error, rather than a fully realistic wearable measurement process.
-
-In the informative-missingness scenario the probability that interval exposure was unavailable was
+The prespecified primary model was frequentist logistic regression,
 
 $$
-\operatorname{logit}\Pr(M_{ig}=1)=-3.2+0.45z_{i0g}+0.5D_i+1.5Y_{ig}.
+\log\left\{\frac{p_i}{1-p_i}\right\}=\alpha+\beta_H(H_i/5)+\beta_A\{(A_i-30)/5\}+\gamma^{\mathsf T}Z_i,
+\qquad p_i=\Pr(Y_i=1\mid H_i,A_i,Z_i).
 $$
 
-Here $D_i$ denotes deprivation and $Y_{ig}$ indicates delivery in that interval. Birth outcomes continued to define follow-up even if an exposure row was dropped. This intentionally outcome-dependent mechanism is not missing at random. No imputation or weighting correction is claimed.
+The adjustment vector contained smoking, deprivation, fixed location indicators, log one plus mean precipitation during the same 14-day window, annual sine and cosine terms at entry, and calendar year centred at 2022. Johannesburg, no smoking and no deprivation were reference categories. Covariates were retained for the specified adjustment structure, rather than selected by stepwise significance testing. Separate univariable models provided the unadjusted estimates. A maternal-adjusted heat model was retained to show the effect of adding location and calendar adjustment.
 
-The observed nonlinear model estimated the four heat terms and 15 baseline terms, including the intercept. A deliberately misspecified comparator retained the same baseline terms but used current-window temperature linearly, omitting the delayed window and nonlinear basis. Its single coefficient was evaluated against the joint heat estimand as an illustration of the consequences of using an inadequate model; it does not estimate a distinct correctly specified target. The oracle used true personal exposures and complete risk sets. Oracle fits equal the nonlinear fits in the null, moderate and nonlinear scenarios and were reused there rather than refitted.
-
-This finite exposure-by-window basis follows the general principle of distributed lag nonlinear modelling [5], but it is a custom hinge-quadratic basis with two lag-window indicators. It is not a fitted spline, a full daily lag surface or a run of the R dlnm package. Seasonal and site adjustment reproduce the specified data-generating structure; they do not demonstrate control of all real-world confounding.
-
-### Estimation and simulation performance
-
-R used binomial complementary log-log GLMs; Python used statsmodels GLMs. Each language independently reconstructed exposure windows, risk sets and model matrices from the same cohort-level files. Maximum likelihood used a maximum of 100 iterations and tolerance $10^{-10}$. Coefficient covariance matrices yielded
+The exposure odds ratio was $\exp(\beta_H)$ per 5 degrees C; the age odds ratio was per five years. Odds ratios were not interpreted as risk ratios. HC3 sandwich covariance accounted for leverage in the estimated score variability [3]. With $I=X^{\mathsf T}WX$ and logistic leverage $h_i$, the estimator was
 
 $$
-\widehat{\operatorname{se}}(\hat\theta)=\sqrt{c^\top\widehat Vc},\qquad
-CI_{95}=\hat\theta\pm1.96\widehat{\operatorname{se}}(\hat\theta).
+\widehat V_{HC3}=I^{-1}\left\{\sum_i\frac{x_ix_i^{\mathsf T}(Y_i-\hat p_i)^2}{(1-h_i)^2}\right\}I^{-1}.
 $$
 
-The vector $c$ selects the four heat coefficients. A two-sided Wald test of $\theta=0$ used a nominal 5% level. This is one prespecified contrast, not an omnibus four-parameter heat test. Bias, empirical standard deviation, mean standard error, root mean squared error, coverage and rejection rate were recorded. Rejection is type I error in the null scenario and power in the other scenarios. For a proportion $\hat p$ over $R=100$ repetitions,
+Confidence intervals were $\exp\{\hat\beta\pm1.96\operatorname{SE}_{HC3}(\hat\beta)\}$, with two-sided Wald p values. These are confidence intervals from a frequentist analysis, not posterior credible intervals. Robust standard errors do not remove confounding or correct a misspecified mean relationship.
 
-$$
-\operatorname{MCSE}(\hat p)=\sqrt{\hat p(1-\hat p)/R},\qquad
-\operatorname{MCSE}(\widehat{\mathrm{bias}})=s_{\hat\theta}/\sqrt R.
-$$
+### Model diagnostics and sensitivity analyses
 
-The maximum possible proportion MCSE is 0.05. Wilson intervals for rejection rates and all replicate estimates are supplied as results files. The design supports a manageable methodological demonstration, not highly precise power calculations. Model-based standard errors are appropriate under the correctly specified generator; their behaviour under misspecification is itself part of the evaluation.
+Diagnostics assessed convergence, finite estimates, model-matrix rank and complete or quasi separation. Separation was checked by linear programming: a nonzero coefficient direction with nonnegative outcome-signed margins and at least one strict margin indicates separation. The implementation was checked on known complete, quasi and overlapping examples.
 
-### Landmark prediction and independent testing
+Heat and age linearity on the logit scale were assessed by separately replacing each linear term with a three-degree-of-freedom natural cubic spline and using a likelihood-ratio test. Normal distributions of predictors or residuals are not assumptions of logistic regression. A spline sensitivity model for both heat and age supplied a pointwise association curve relative to median heat and an exploratory interquartile contrast; this model was not selected because of its p values.
 
-An independently seeded illustrative cohort contained 6,000 pregnancies. Among those still undelivered at the beginning of week 28, the prediction endpoint was subsequent delivery before week 37. Predictors comprised age, smoking, deprivation, two prior temperature windows, recent rainfall, annual seasonal terms and calendar year at the landmark. No future weather, latent personal offset or post-delivery information was available to the classifiers.
+Collinearity was assessed using generalised variance-inflation factors and their degrees-of-freedom adjustment. Influence was examined with leverage and Cook's distance. The primary fit retained every eligible record. A sensitivity analysis omitted only the five largest Cook distances and disclosed the resulting sample and event counts; the screening threshold 4/N was not an exclusion rule.
 
-Training used Johannesburg, Durban, Cape Town and Harare, restricted to pregnancies whose entire planned 119-day follow-up from week-20 entry ended by 31 December 2022. The temporal test used entries on or after 1 January 2023 in those locations. Nairobi and Abidjan were completely withheld from training: their earlier entries formed the geographic test and their later entries the combined-shift test. Pregnancies in the intervening calendar gap were excluded from prediction evaluation. Geographic validation here concerns two illustrative locations, not general validation across Africa.
+Grouped goodness of fit was examined using ten fitted-probability groups and a Hosmer-Lemeshow statistic. Its p value is grouping dependent and does not prove that a model is correct. The accompanying plot describes in-sample fit rather than independent prediction performance. Additional sensitivity analyses used the separate seven-day windows and location-specific annual seasonal terms. Secondary and sensitivity findings were not multiplicity-adjusted and were treated as exploratory.
 
-| Partition | Pregnancies | Preterm births |
-| --- | --- | --- |
-| Training | 2355 | 236 |
-| Temporal | 1297 | 154 |
-| Geographic | 1209 | 170 |
-| Combined shift | 610 | 78 |
-| Excluded transition | 420 | 49 |
+### Tables and visualisation
 
-The maternal baseline used ridge logistic regression with three maternal covariates. An augmented ridge model used all nine predictors. With standardisation estimated in training, ridge minimises
-
-$$
--\sum_{i\in\mathcal T}\{y_i\log p_i+(1-y_i)\log(1-p_i)\}+\tfrac12\|b\|_2^2,
-\qquad p_i=\operatorname{logit}^{-1}(b_0+x_i^\top b).
-$$
-
-The intercept was unpenalised. Python used $C=1$; R used glmnet with $\alpha=0$ and $\lambda=1/n_{\mathcal T}$ to match the loss normalisation. Random Forest averaged probabilities from 400 bootstrap trees, with minimum terminal size 25 and six candidate predictors per split. Gradient boosting added 150 depth-2 trees at learning rate 0.03, minimum node size 25 and Bernoulli deviance:
-
-$$
-F_m(x)=F_{m-1}(x)+0.03f_m(x),\qquad
-p(x)=\operatorname{logit}^{-1}\{F_{150}(x)\}.
-$$
-
-The trees approximate successive negative gradients of the binomial loss. Settings were prespecified; no test-set tuning was performed. R ranger and gbm and Python scikit-learn implement different tree algorithms, so identical tree predictions are neither required nor asserted. R prediction is primary in the manuscript, with complete Python results retained. An additional unpenalised logistic specification was cross-checked numerically between languages.
-
-Evaluation included ROC AUC, average precision, Brier score, calibration intercept with logit predictions as an offset and calibration slope from a logistic regression on those logits. Ideal intercept and slope are 0 and 1. Participant bootstrap percentile intervals used 300 resamples, conditional on the fitted model and test sample structure. Paired resampling estimated changes in AUC against the maternal baseline. These intervals do not include training-set uncertainty or uncertainty across future cohorts. Binned calibration plots are descriptive and are not formal calibration tests.
-
-### Hypothetical exposure standardisation
-
-For the illustrative cohort, fitted weekly hazards were combined into cumulative risk,
-
-$$
-R_i(a)=1-\prod_{g=20}^{36}\{1-\hat h_{ig}(T_{i0g}-a,T_{i1g}-a)\},\qquad
-\Delta=\frac1N\sum_i\{R_i(2)-R_i(0)\}.
-$$
-
-The exercise compared ambient exposure with a hypothetical uniform 2°C reduction. Full latent weather schedules were used only for this retrospective explanatory calculation and for its known generating truth, never as prediction inputs. An analytic delta-method interval used the gradient of the mean risk difference with respect to the fitted coefficients, with variance $\nabla\Delta^\top\widehat V\nabla\Delta$. It excludes uncertainty in the population, weather and intervention mechanism. This calculation is not an evaluation of a feasible cooling intervention, a causal effect identified in patient data or attribution to anthropogenic climate change.
+Descriptive characteristics were summarised as median and interquartile range or count and percentage. The gtsummary package produced the participant and regression tables [4], with a custom tidier retaining HC3 intervals and p values. These objects were converted to native editable Word tables with flextable [5]. The same displayed values were exported for the GitHub README. Figures were created with ggplot2. All statistical calculations and narrative values in this analysis were derived in R.
 
 ## Results
 
-### Simulation performance and numerical reproducibility
+### Cohort characteristics and exposure
 
-All 1,500 fit records in each language converged. The maximum absolute R–Python differences were 9.7e-08 for the joint heat estimate and 1.8e-06 for its standard error. The additional unpenalised landmark logistic model agreed to 2.7e-11 in its coefficients. Oracle records in three scenarios reuse identical nonlinear fits, so these totals do not represent 1,500 distinct numerical optimisations per language.
+All 6,000 source pregnancies were retained, including 796 delivery events before week 37 (13.3%) and 411 before week 34 (6.9%). Entry dates ranged from 2020-01-15 to 2024-06-30. Median baseline heat was 25.3 degrees C (IQR 23.2-27.8). There were 1,000 pregnancies at each illustrative location. Table 1 describes the cohort by the primary outcome.
 
-For the observed nonlinear model, null rejection was 5% (MCSE 2.2%). Power was 10% under the moderate contrast and 26% under the full nonlinear contrast. Coverage in those two scenarios was 94% and 97%. Bias was +0.028 under unobserved personal exposure and -0.086 under informative exposure missingness. These findings concern the prespecified joint contrast and simulated assumptions, not an estimated clinical heat effect.
+| **Characteristic** | **Overall**  <br>N = 6,000 | **No delivery before 37 weeks**  <br>N = 5,204 | **Delivery before 37 weeks**  <br>N = 796 |
+| --- | --- | --- | --- |
+| __Maternal age years__ | 28.9 (24.9, 33.0) | 28.8 (24.9, 32.9) | 29.8 (25.7, 33.7) |
+| __14-day baseline heat degrees C__ | 25.3 (23.2, 27.8) | 25.2 (23.1, 27.6) | 25.8 (23.8, 28.8) |
+| __14-day mean rainfall mm__ | 1.39 (0.28, 3.68) | 1.30 (0.27, 3.58) | 1.94 (0.37, 4.10) |
+| __Smoking__ | 932 (16%) | 773 (15%) | 159 (20%) |
+| __Deprivation__ | 2,473 (41%) | 2,092 (40%) | 381 (48%) |
+| __Illustrative location__ |  |  |  |
+| Johannesburg | 1,000 (17%) | 882 (17%) | 118 (15%) |
+| Durban | 1,000 (17%) | 866 (17%) | 134 (17%) |
+| Cape Town | 1,000 (17%) | 911 (18%) | 89 (11%) |
+| Harare | 1,000 (17%) | 853 (16%) | 147 (18%) |
+| Nairobi | 1,000 (17%) | 883 (17%) | 117 (15%) |
+| Abidjan | 1,000 (17%) | 809 (16%) | 191 (24%) |
+| __Entry year__ |  |  |  |
+| 2020 | 1,351 (23%) | 1,167 (22%) | 184 (23%) |
+| 2021 | 1,377 (23%) | 1,201 (23%) | 176 (22%) |
+| 2022 | 1,327 (22%) | 1,161 (22%) | 166 (21%) |
+| 2023 | 1,264 (21%) | 1,098 (21%) | 166 (21%) |
+| 2024 | 681 (11%) | 577 (11%) | 104 (13%) |
 
-| Scenario | Model | Bias | Coverage | Rejection | MCSE |
+Continuous entries are median (25th, 75th percentiles); categorical entries are n (%). Smoking and deprivation rows count Yes. Percentages are descriptive and the balanced location allocation reflects the simulation design. No inferential p values were added to the descriptive table.
+
+The environmental distributions differed across locations, with hotter baseline conditions in Abidjan and substantial seasonal variation elsewhere. These plots describe assigned weather exposures, not geographic patterns of clinical disease.
+
+![Figure 1 Distribution of baseline heat by illustrative weather location](figures/association/01_exposure_distribution.png)
+
+### Heat and maternal associations
+
+The crude heat OR was 1.39 (95% CI 1.26-1.54) per five degrees C. After adjustment for maternal characteristics, location, rainfall, season and calendar year, the OR was 0.87 (95% CI 0.70-1.08; p = 0.207). The adjusted interval included one, providing no clear evidence of a linear heat association in the primary analysis. Adjusted ORs were 1.15 (95% CI 1.07-1.22; p < 0.001) for age per five years, 1.41 (95% CI 1.16-1.70; p < 0.001) for smoking and 1.37 (95% CI 1.17-1.59; p < 0.001) for deprivation. These are differences in odds, not percentage changes in risk.
+
+| Characteristic | Unadjusted OR | 95% CI | Adjusted OR | 95% CI | Adjusted p |
 | --- | --- | --- | --- | --- | --- |
-| Exposure error | Current linear | -0.270 | 69% | 11% | 3.1% |
-| Exposure error | Nonlinear | +0.028 | 95% | 30% | 4.6% |
-| Exposure error | Oracle | -0.005 | 99% | 46% | 5.0% |
-| Informative missingness | Current linear | -0.324 | 62% | 6% | 2.4% |
-| Informative missingness | Nonlinear | -0.086 | 98% | 13% | 3.4% |
-| Informative missingness | Oracle | +0.014 | 97% | 26% | 4.4% |
-| Moderate | Current linear | -0.138 | 90% | 6% | 2.4% |
-| Moderate | Nonlinear | +0.012 | 94% | 10% | 3.0% |
-| Moderate | Oracle | +0.012 | 94% | 10% | 3.0% |
-| Nonlinear | Current linear | -0.287 | 63% | 10% | 3.0% |
-| Nonlinear | Nonlinear | +0.014 | 97% | 26% | 4.4% |
-| Nonlinear | Oracle | +0.014 | 97% | 26% | 4.4% |
-| Null | Current linear | +0.020 | 93% | 7% | 2.6% |
-| Null | Nonlinear | +0.021 | 95% | 5% | 2.2% |
-| Null | Oracle | +0.021 | 95% | 5% | 2.2% |
+| __Baseline heat per 5 degrees C__ | 1.39 | 1.26, 1.54 | 0.87 | 0.70, 1.08 | 0.207 |
+| __Maternal age per 5 years__ | 1.14 | 1.07, 1.22 | 1.15 | 1.07, 1.22 | <0.001 |
+| __Smoking yes versus no__ | 1.43 | 1.18, 1.73 | 1.41 | 1.16, 1.70 | <0.001 |
+| __Deprivation yes versus no__ | 1.37 | 1.18, 1.59 | 1.37 | 1.17, 1.59 | <0.001 |
+| __Illustrative location__ |  |  |  |  |  |
+| Johannesburg |  |  |  |  |  |
+| Durban | 1.16 | 0.89, 1.51 | 1.28 | 0.94, 1.74 | 0.115 |
+| Cape Town | 0.73 | 0.55, 0.98 | 0.72 | 0.53, 0.97 | 0.030 |
+| Harare | 1.29 | 0.99, 1.67 | 1.39 | 1.04, 1.85 | 0.027 |
+| Nairobi | 0.99 | 0.75, 1.30 | 1.05 | 0.78, 1.42 | 0.731 |
+| Abidjan | 1.76 | 1.38, 2.26 | 2.31 | 1.44, 3.71 | <0.001 |
 
-Bias refers to the log joint heat contrast; coverage is nominally 95%. The rejection MCSE is a percentage-point uncertainty measure across 100 replicates. Complete results, including coverage MCSE and Wilson intervals, are provided in results/simulation_summary.csv. The linear comparator is deliberately misspecified and oracle results are an upper-information benchmark.
+Johannesburg is the location reference. Adjustment also includes rainfall, season and calendar year. Location estimates describe this synthetic design, not national clinical risks. The forest plot shows the imprecise heat estimate alongside the positive maternal covariate associations.
 
-The bias comparison separates the error introduced by an insufficient exposure model from the error introduced by unavailable information. The Monte Carlo intervals describe uncertainty in average bias; they are not confidence intervals for individual pregnancies.
+![Figure 2 Adjusted odds ratios for the primary exposure and maternal characteristics](figures/association/02_adjusted_associations.png)
 
-![Figure 2 Bias in the simulated joint heat contrast](figures/simulation_bias.png)
+### Functional form and other diagnostics
 
+The primary model converged with full rank (14 coefficients), finite estimates and no complete or quasi separation detected by linear programming. The likelihood-ratio p values for nonlinear heat and age terms were 0.101 and 0.906. These tests did not provide strong evidence against linear logit terms, but do not prove linearity. Heat had a one-degree-of-freedom VIF of 5.14 and adjusted GVIF of 2.27; this reflects overlap with the adjustment variables and should not be described as an absence of collinearity. The grouped goodness-of-fit statistic was 10.20 on 8 degrees of freedom (p = 0.251).
 
-The calibration plot should be interpreted jointly with its finite simulation precision. A rejection rate close to 5% in a null scenario is reassuring for this generator, but 100 replicates cannot establish precise tail calibration for all plausible heat-health datasets.
+| Check | Finding | Interpretation |
+| --- | --- | --- |
+| Convergence and rank | Converged; rank 14 of 14 | Finite maximum likelihood estimates and estimable design |
+| Separation | No complete or quasi separation detected | Linear programming diagnostic; not only a convergence check |
+| Heat linearity on logit scale | Spline versus linear likelihood ratio p 0.101 | Prespecified functional-form sensitivity; no automatic model selection |
+| Age linearity on logit scale | Spline versus linear likelihood ratio p 0.906 | Prespecified functional-form sensitivity; age need not be normally distributed |
+| Collinearity | Maximum adjusted GVIF 2.27 | Report term degrees of freedom; adjusted GVIF is not the raw one-df VIF |
+| Grouped goodness of fit | HL chi-square 10.20 on 8 df; p 0.251 | Ten groups; grouping-dependent in-sample diagnostic, not external validation |
+| Influential observations | 747 above Cook distance 4/N; five largest examined | Primary analysis retains every eligible pregnancy; deletion is sensitivity only |
 
-![Figure 3 Coverage and rejection across repeated simulations](figures/simulation_calibration.png)
+The spline curve is a sensitivity assessment of functional form, with pointwise intervals rather than a simultaneous confidence band. It assumes a common heat response across locations and does not estimate a local curve for every city. The plotted range is restricted to the pooled 1st-99th exposure percentiles; local overlap remains uneven.
 
+The exploratory spline contrast comparing the 75th exposure percentile (27.8 degrees C) with the 25th (23.2 degrees C) gave OR 0.73 (95% CI 0.55-0.95). This differs from the prespecified constant five-degree linear contrast and is not evidence that higher heat prevents adverse outcomes. Additional contrasts were not corrected for multiplicity.
 
-### Illustrative exposure response
+![Figure 3 Exploratory nonlinear heat association relative to the median exposure](figures/association/03_nonlinear_association.png)
 
-The illustrative curve compares equal temperatures in both lag windows with 25°C in both windows. Its uncertainty reflects a four-term contrast and is pointwise, without simultaneous-band correction. Agreement with the planted curve evaluates recovery in this synthetic cohort; divergence at hot values can reflect limited exposure support and coefficient uncertainty. A flat fitted curve below 25°C is imposed by the chosen hinge basis and is not an empirical discovery of no cold effect.
+There were 747 records above the Cook distance screening threshold 4/N, with maximum Cook distance 0.0026. This low screening threshold was not used to delete records from the primary cohort. Omitting the five largest values yielded OR 0.87 (95% CI 0.70-1.09), with 5,995 pregnancies and 791 events, compared with the full-cohort OR 0.87.
 
-The 30°C joint exposure occurred predominantly in Abidjan. Some locations had no risk intervals with both windows at least 30°C, while Abidjan had no current-window mean as low as 25°C. The pooled contrast therefore relies on the assumed common response across sites and should not be interpreted as a separately identified local heat effect in every city. The curve extends to 35°C, slightly beyond the observed current-window range, to show the specified basis; its upper edge is extrapolation. The association curve and standardisation model use the full illustrative cohort; their explanatory fit is separate from the held-out prediction exercise.
+![Figure 4 Influence screening while retaining the full primary cohort](figures/association/04_influence.png)
 
-| Location | Current window range °C | Both windows above 25°C | Both windows at least 30°C |
-| --- | --- | --- | --- |
-| Johannesburg | 11.5–30.4 | 10.5% | 0.0% |
-| Durban | 19.5–32.1 | 43.6% | 0.4% |
-| Cape Town | 14.7–30.2 | 17.3% | 0.0% |
-| Harare | 16.3–32.6 | 42.7% | 1.0% |
-| Nairobi | 19.4–30.2 | 46.6% | 0.0% |
-| Abidjan | 26.9–34.8 | 100.0% | 63.7% |
+The grouped plot provides a descriptive check of observed and fitted event proportions. Agreement is evaluated within the same cohort used to fit the regression and is not a validation of an operational prediction tool.
 
-![Figure 4 Estimated and generating heat response in the illustrative synthetic cohort](figures/response.png)
+![Figure 5 Grouped in sample goodness of fit](figures/association/05_grouped_fit.png)
 
+### Exposure and adjustment sensitivities
 
-### Held out preterm prediction
+The separate seven-day windows retained imprecise fully adjusted estimates. Allowing location-specific seasonal terms gave OR 0.86 (95% CI 0.65-1.14). For the exploratory before-week-34 endpoint, the OR was 0.86 (95% CI 0.64-1.16). These checks provide context for the primary association, not independent confirmatory findings.
 
-The illustrative cohort contained 796 preterm events among 6,000 pregnancies (13.3%), of which 5,891 were still undelivered at week 28. Across the held-out partitions, R AUCs ranged from 0.530 to 0.629; corresponding Python AUCs ranged from 0.530 to 0.634. These values indicate modest separation between later preterm and non-preterm outcomes. Tree models did not provide an established general advantage.
-
-For example, the R Random Forest in the combined-shift test had AUC 0.629, calibration slope 1.94 and Brier score 0.110, compared with maternal-baseline Brier score 0.112. Ranking ability and probability accuracy should therefore be assessed separately. The test-set sizes and event counts should be considered alongside AUC intervals, Brier scores and calibration slopes.
-
-| Test set | R model | AUC 95% CI | Brier | Slope |
+| Analysis | N | Events | OR (95% CI) | P |
 | --- | --- | --- | --- | --- |
-| Temporal | Maternal baseline | 0.571 (0.518–0.622) | 0.104 | 0.87 |
-| Geographic | Maternal baseline | 0.576 (0.529–0.618) | 0.121 | 0.83 |
-| Combined shift | Maternal baseline | 0.530 (0.461–0.595) | 0.112 | 0.34 |
-| Temporal | Logistic | 0.594 (0.545–0.642) | 0.103 | 0.90 |
-| Geographic | Logistic | 0.612 (0.571–0.657) | 0.119 | 1.15 |
-| Combined shift | Logistic | 0.588 (0.520–0.647) | 0.110 | 0.94 |
-| Temporal | Random forest | 0.548 (0.508–0.596) | 0.105 | 0.44 |
-| Geographic | Random forest | 0.582 (0.535–0.631) | 0.121 | 1.17 |
-| Combined shift | Random forest | 0.629 (0.565–0.689) | 0.110 | 1.94 |
-| Temporal | Gradient boosting | 0.604 (0.563–0.653) | 0.103 | 1.10 |
-| Geographic | Gradient boosting | 0.611 (0.571–0.655) | 0.119 | 1.02 |
-| Combined shift | Gradient boosting | 0.614 (0.546–0.678) | 0.109 | 1.24 |
+| 14-day exposure; unadjusted | 6000 | 796 | 1.39 (1.26, 1.54) | <0.001 |
+| 14-day exposure; maternal adjusted | 6000 | 796 | 1.39 (1.25, 1.53) | <0.001 |
+| 14-day exposure; fully adjusted | 6000 | 796 | 0.87 (0.70, 1.08) | 0.207 |
+| 7-day exposure; fully adjusted | 6000 | 796 | 0.83 (0.68, 1.01) | 0.063 |
+| Days 8-14; fully adjusted | 6000 | 796 | 0.96 (0.80, 1.16) | 0.679 |
+| Site-specific seasonality | 6000 | 796 | 0.86 (0.65, 1.14) | 0.304 |
+| Exploratory delivery before 34 weeks | 6000 | 411 | 0.86 (0.64, 1.16) | 0.329 |
+| Omit five highest Cook distances | 5995 | 791 | 0.87 (0.70, 1.09) | 0.227 |
 
-The calibration slope measures the spread of predictions relative to observed outcomes: slopes below 1 suggest predictions that vary too strongly, while slopes above 1 suggest insufficient variation, conditional on this evaluation. These are held-out synthetic results; none constitutes external clinical validation.
-
-![Figure 5 Held out ROC curves from R models](figures/roc.png)
-
-
-![Figure 6 Held out calibration of R models](figures/prediction_calibration.png)
-
-
-Compared with maternal-only ridge regression, the changes in R AUC ranged from -0.022 to +0.099. Paired bootstrap intervals are shown below rather than treating every positive change as evidence of benefit. Added predictive value is specific to this synthetic cohort and may differ with another training sample or data-generating mechanism.
-
-| Test set | Model | Change in AUC 95% CI | Change in Brier |
-| --- | --- | --- | --- |
-| Combined shift | Logistic | +0.059 (+0.017 to +0.108) | -0.0023 |
-| Combined shift | Random forest | +0.099 (+0.001 to +0.197) | -0.0023 |
-| Combined shift | Gradient boosting | +0.084 (+0.017 to +0.155) | -0.0033 |
-| Geographic | Logistic | +0.036 (+0.009 to +0.062) | -0.0024 |
-| Geographic | Random forest | +0.006 (-0.050 to +0.067) | -0.0007 |
-| Geographic | Gradient boosting | +0.036 (-0.008 to +0.076) | -0.0020 |
-| Temporal | Logistic | +0.023 (-0.005 to +0.051) | -0.0007 |
-| Temporal | Random forest | -0.022 (-0.083 to +0.046) | +0.0008 |
-| Temporal | Gradient boosting | +0.034 (-0.011 to +0.087) | -0.0007 |
-
-Positive changes in AUC favour the augmented model; negative changes in Brier score favour it. The augmented models add weather, seasonal and calendar information together, so these comparisons do not isolate temperature alone. Selecting the largest observed AUC after viewing the test results would introduce additional selection bias; no universally preferred algorithm is claimed.
-
-### Hypothetical exposure reduction
-
-The fitted model-standardised average risk was 13.25% under ambient schedules and 12.57% under the assumed 2°C reduction. The estimated difference was -0.69 percentage points (approximate parameter-only 95% interval -1.41 to +0.03). The known generating difference was -1.01 percentage points. These values describe the assumed synthetic mechanism and a uniform mathematical exposure shift; they are not estimates of benefits from any real intervention.
+Each heat odds ratio represents a five-degree contrast within the stated window. The before-week-34 analysis uses a different exploratory outcome. The omission analysis removes five events because those records had the five largest Cook distances; it does not replace the full-cohort result. The spline interquartile contrast and linear five-degree contrast are different summaries and are not interchangeable.
 
 ## Discussion
 
-The principal contribution is a transparent workflow connecting exposure construction, gestational survival analysis, simulation calibration and honest prediction evaluation. The survival and prediction analyses answer different questions. The former estimates a prespecified conditional heat contrast under an explicit model; the latter assesses whether information available at week 28 helps distinguish later events. Useful association recovery need not imply high predictive discrimination, particularly where heat explains only a small part of outcome variation and future exposure remains unknown.
+The main finding was that the crude positive association between baseline heat and subsequent delivery before week 37 did not persist in the fully adjusted primary linear model. The change in magnitude and direction after location and calendar adjustment shows that the crude estimate was sensitive to the covariate structure. It does not prove that heat is protective or that every source of confounding has been removed.
 
-Low power in this design should not be interpreted as evidence that heat has no effect: the true effect is known because it was generated. Each cohort provides far fewer events than participants, the two exposure windows are correlated, and hot exposure support is uneven across locations. These features limit precision even when the fitted model is correct. Changing the simulated effect or selecting a favourable replicate to obtain a significant result would answer a different question. The reported configuration and results are retained as generated.
+Maternal age, smoking and deprivation had positive adjusted associations in the synthetic cohort. These relationships are coherent with the specified generator, but their recovery is not new clinical evidence. The environmental and maternal variables also have different interpretations: heat was a short baseline exposure measurement, while the outcome reflected delivery over the following gestational weeks. A baseline association cannot identify the effects of exposure occurring later in pregnancy.
 
-The oracle is valuable because it distinguishes avoidable modelling limitations from missing information. It knows true personal exposures and retains complete exposure records. Its advantage in a stress scenario does not mean an applied analyst can attain the same result merely by choosing a more flexible model. Exposure measurement, missingness mechanisms and reliable clinical follow-up are substantive requirements. Likewise, a more complex classifier can perform worse in new years or locations even when its training fit is stronger.
+The spline sensitivity suggested that a single linear coefficient does not exhaust the possible exposure pattern. Its interquartile contrast should be interpreted alongside the primary estimate and the exploratory nature of the additional analyses. Isolated intervals from a flexible curve are not sufficient to claim a protective heat effect. The workflow retains these differences rather than selecting whichever result is most statistically significant.
 
-Several features improve relevance to environmental epidemiology: real historical weather preserves seasonality and temporal dependence; exposure windows end before each risk interval; pregnancies leave the risk set at delivery; the prediction calendar separates training outcome availability from future evaluation; and geographic testing withholds entire locations. Numerical R–Python agreement provides evidence of consistent implementation. It does not validate the assumed biology, exposure threshold or effect sizes.
+Strengths of the analysis include documented data import and quality checks, a fixed exposure window preceding follow-up, explicit outcome and reference coding, clinically interpretable covariate increments, native gtsummary and flextable outputs, and transparent diagnostics. Missingness and influence were assessed without manufacturing data problems or silently excluding observations. The model was estimable and the diagnostic findings were reported with their limitations.
 
-Important limitations remain. Each city is represented by one gridded location and no within-city housing, workplace, mobility, humidity, indoor heat or behavioural adaptation process. Covariates are simplified and independent; there is no measured clinical severity or clinical care process. The generator shares its nonlinear basis with one fitted model, favouring that model under correct specification. The misspecified linear comparator is a sensitivity benchmark rather than a claim of superiority over all distributed-lag methods. The homogeneous heat effect, fixed 25°C threshold and two-window memory omit realistic acclimatisation and longer gestational susceptibility. Correlated outcomes due to shared unmeasured site-day causes, residual confounding, competing pregnancy outcomes and informative entry are absent. Complete-case exposure analysis is intentionally inadequate under outcome-dependent missingness.
+Important limitations arise from the data themselves. All health records are simulated; clinical definitions, treatment, comorbidity, pregnancy loss and live-birth status are absent. Six balanced illustrative locations are not representative clinical centres. One reanalysis coordinate cannot measure personal temperature, housing, occupational exposure, cooling behaviour or mobility. The short baseline window does not represent all subsequent heat, and seasonal adjustment may remain incomplete. Exposure overlaps with location and season, limiting precision and interpretation of a shared coefficient. The endpoint is an interval-coded generated event, not an independently verified clinical diagnosis.
 
-Only 100 independent base repetitions were conducted and prediction was evaluated in one synthetic cohort. Monte Carlo uncertainty and conditional bootstrap intervals must therefore accompany performance rankings. The standardisation exercise assumes exposure can be shifted without changing other determinants and uses complete simulated schedules; it cannot establish clinical preventability. Personal offsets and missingness parameters are assumptions, not estimated features of a particular cohort.
-
-With appropriately governed patient data, the next steps would be to define the target population and pregnancy time origin, audit delivery and censoring dates, assess exposure coverage and address spatial resolution. A prespecified analysis could compare flexible temperature and lag bases, investigate adaptation using location-specific temperature distributions, model clinically relevant competing events and evaluate exposure error using personal measurements where available. Prediction requires an operational forecast horizon, information available at deployment and prospective recalibration. The current study demonstrates methods that could support such work while making no claim that these extensions have already been validated.
+The study therefore demonstrates a complete applied analysis in R, with substantive association estimates and explicit uncertainty. Application to actual patient data would require a clinical data dictionary, validated obstetric endpoints, appropriate covariate and exposure measurement and a justified confounding strategy. These requirements cannot be met merely by choosing a more complicated statistical model.
 
 ## Conclusion
 
-Public historical weather and synthetic pregnancies provide a reproducible environment for assessing heat-health analysis methods. A correctly specified lagged nonlinear model, an oracle benchmark and prespecified misspecification scenarios make performance interpretable against known truth. Held-out prediction and hypothetical standardisation complement association analysis but do not replace independent clinical validation. The resulting R and Python workflow is a methodological portfolio study, not evidence of patient-level effects or readiness for a public-health warning system.
+In this synthetic cohort, the adjusted primary analysis did not show clear evidence of an association between heat during the 14 days before week-20 entry and later delivery before week 37. Maternal age, smoking and deprivation showed positive adjusted associations. The crude heat association changed after location and calendar adjustment, and functional-form sensitivity warranted cautious interpretation. The study provides reproducible preprocessing, association estimates, diagnostics and publication-style tables while remaining explicitly a simulation-based applied research exercise.
 
 ## Data and code availability
 
-The compact weather panel, synthetic illustrative cohort, configuration, simulation manifest, coefficient estimates, replicate performance, held-out predictions, figures and report source are included. Large raw API responses and regenerable cohort caches are excluded from version control. Source URLs and hashes are retained. Weather attribution: ERA5 reanalysis obtained through Open-Meteo, with source data retaining their applicable CC BY 4.0 attribution requirements [4]. Original code and manuscript use the MIT licence. No Wits PHR participant data were used. No institutional affiliation, endorsement, ethics approval or peer review is implied.
+The source weather and synthetic cohort are retained unchanged. The complete cleaned analysis dataset, dictionary, exclusion and missingness audit, regression estimates, model objects, diagnostics and table objects are under results/association. The ordered R scripts and run_association.R reproduce the analysis, figures and manuscript source. Native gtsummary and flextable outputs are retained with the exported tables. Weather attribution remains ERA5 through Open-Meteo under the applicable CC BY terms [2].
 
-Python scientific dependencies are pinned, R session information and package versions are retained, and a smoke test reproduces matched R and Python fits. The full pipeline regenerates the simulation results before generating figures and the Quarto manuscript. The Word report contains editable native equations rendered by Pandoc. Publication or submission should follow independent scientific review and any necessary institutional approvals.
+The complete previous methods study is frozen under archive/methods-study-v1, including its original README, code, results, figures and Word manuscript. It is historical supplementary work rather than the primary study reported here. No clinical cohort, institutional collaboration or empirical discovery is claimed. The manuscript has not undergone journal peer review.
 
 ## References
 
 1. Chersich MF and colleagues. Associations between high temperatures in pregnancy and risk of preterm birth, low birth weight, and stillbirths. BMJ 2020;371:m3811. https://www.bmj.com/content/371/bmj.m3811
-2. Wits Planetary Health Research. HEAT Center. https://witsphr.org/Projects/HEAT-Center
-3. Wits Planetary Health Research. Bio-HEAT. https://witsphr.org/Projects/Bio-HEAT
-4. Open-Meteo. Historical Weather API documentation and data attribution. https://open-meteo.com/en/docs/historical-weather-api
-5. Gasparrini A, Armstrong B, Kenward MG. Distributed lag non-linear models. Statistics in Medicine 2010;29:2224–2234. https://pmc.ncbi.nlm.nih.gov/articles/PMC2998707/
+2. Open-Meteo. Historical Weather API documentation and data attribution. https://open-meteo.com/en/docs/historical-weather-api
+3. Zeileis A. Econometric computing with HC and HAC covariance matrix estimators. Journal of Statistical Software 2004;11(10). https://doi.org/10.18637/jss.v011.i10
+4. Sjoberg DD and colleagues. gtsummary regression and summary table documentation. https://www.danieldsjoberg.com/gtsummary/
+5. Gohel D. flextable documentation. https://ardata-fr.github.io/flextable-book/
 
-## Reproducing the study
+## Reproducing the R association study
 
-Use Python 3.12, R 4.5.1 and Quarto. R packages used for figures and prediction are ggplot2, ranger, gbm, glmnet and pROC; their installed versions are recorded in provenance. The main survival analysis uses base R. The included ERA5 CSV allows network-free analysis; `--download-weather` refreshes the source through the public API and re-runs download QC.
+Use R 4.5.1 or a compatible version. Required packages are jsonlite, sandwich, car, lpSolve, gtsummary, flextable, officer, ggplot2, dplyr, broom, knitr and rmarkdown. The installed versions and complete R session are recorded with the association outputs. Quarto is needed only for Word rendering.
 
-```bash
-python -m venv .venv
-# Linux or macOS
-source .venv/bin/activate
-# Windows PowerShell instead: .venv\Scripts\Activate.ps1
-python -m pip install -r requirements.txt
-Rscript --vanilla -e "install.packages(c('ggplot2','ranger','gbm','glmnet','pROC'), repos='https://cloud.r-project.org')"
-python run_workflow.py --smoke
-python run_workflow.py --render
+```r
+install.packages(c('jsonlite','sandwich','car','lpSolve','gtsummary',
+                   'flextable','officer','ggplot2','dplyr','broom',
+                   'knitr','rmarkdown'), repos='https://cloud.r-project.org')
 ```
 
-On Windows, supply `--rscript "C:/Program Files/R/R-4.5.1/bin/Rscript.exe"` and `--quarto "C:/Program Files/RStudio/resources/app/bin/quarto/bin/quarto.exe"` if these executables are not on PATH. Full regeneration is substantially slower than the smoke test. Keep R startup files disabled with `--vanilla`; the workflow also disables user environment/profile files for report rendering. Do not overwrite prior releases when changing scenarios: copy configuration and results into a versioned release directory first.
+```bash
+Rscript --vanilla run_association.R --analysis-only
+Rscript --vanilla run_association.R
+Rscript --vanilla run_association.R --render
+```
 
-The full pipeline runs `generate.py`, independent `analyse.py` and `analyse.R`, the prediction scripts, invariant tests, numerical comparisons, `figures.R`, and `write_manuscript.py`. These scripts include the full implementation; the report is not a substitute for the executable code. Continuous integration is configured for a two-replicate smoke test. A configured CI file does not imply a remote CI run has been observed.
+The first command runs preprocessing, association models, diagnostics and data-integrity checks. The second also produces gtsummary and flextable objects, ggplot figures and the manuscript source. The third renders the Word manuscript. Set QUARTO_PATH to the Quarto executable if it is not on PATH. The workflow does not regenerate the original cohort or run repeated method comparisons. Rendering uses R with user profile and environment files disabled.
 
-Outputs: `results/simulation_summary.csv` contains all simulation metrics; `results/r_prediction_metrics.csv` and `results/prediction_metrics.csv` contain R and Python prediction results; `results/added_value.csv` contains paired AUC comparisons; `results/validation.json` records numerical checks; `report/Heat_Health_Manuscript.docx` is the Word manuscript. All health data and reported health effects are simulated.
+The ordered implementation is R/01_preprocess.R, R/02_associations.R, R/03_tables_figures.R and R/04_manuscript.R. Configuration is in association_config.json. R/validate_association.R checks source preservation, timing, direct weather aggregation, model convergence, exposure-unit scaling and the separation diagnostic. These are software and data checks, not the research objectives.
+
+The original methods study, including its independent R/Python comparisons, is preserved in [archive/methods-study-v1](archive/methods-study-v1/README.md). Its results are not combined with the association findings. The root-level historical scripts remain for provenance; run_association.R is the main entry point.
+

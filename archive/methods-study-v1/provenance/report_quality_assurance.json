@@ -1,0 +1,14 @@
+{
+  "document": "report/Heat_Health_Manuscript.docx",
+  "author": "Vusumuzi Mabasa",
+  "pages": 12,
+  "figures": 6,
+  "tables": 5,
+  "native_math_objects": 32,
+  "rendered_with": "Microsoft Word 2021 PDF export and bundled Poppler PNG rendering at 105 dpi",
+  "packaged_renderer_limitation": "render_docx.py could not find LibreOffice soffice.exe; native Word was used as the renderer",
+  "visual_review": "All 12 final page images reviewed; no clipped content or broken equations; weather and response figure encoding corrected and rechecked",
+  "health_data": "Entirely synthetic",
+  "weather": "Public ERA5 reanalysis through Open-Meteo",
+  "document_sha256": "20512817e607e03e5e8021486707cf1477d1bdc15fd5c2d2f66676654c69d968"
+}

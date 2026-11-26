@@ -1,0 +1,38 @@
+{
+  "n": 6000,
+  "events": 796,
+  "converged": true,
+  "model_rank": 14,
+  "coefficients": 14,
+  "full_rank": true,
+  "min_fitted": 0.04373960052264,
+  "max_fitted": 0.3966216079864,
+  "separation": {
+    "separation": false,
+    "complete": false,
+    "quasi_status": 2,
+    "complete_status": 2
+  },
+  "heat_nonlinearity_p": 0.1009217847189,
+  "age_nonlinearity_p": 0.9060357778497,
+  "max_adjusted_gvif": 2.267561361322,
+  "HL_statistic": 10.1976991359,
+  "HL_df": 8,
+  "HL_p": 0.2514233679535,
+  "cook_threshold": 0.0006666666666667,
+  "above_cook_threshold": 747,
+  "max_cook": 0.002584937913535,
+  "leverage_threshold": 0.004666666666667,
+  "above_leverage_threshold": 126,
+  "influence_deleted_ids": [1695, 1677, 3624, 5710, 5238],
+  "residual_deviance": 4576.739473853716,
+  "residual_df": 5986,
+  "inference": "HC3 robust Wald intervals; no posterior quantities",
+  "spline_iqr": {
+    "low": 23.2,
+    "high": 27.764285714286,
+    "OR": 0.7277087388946,
+    "lower": 0.5548146094309,
+    "upper": 0.9544810098039
+  }
+}

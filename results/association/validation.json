@@ -1,0 +1,11 @@
+{
+  "status": "PASS",
+  "n": 6000,
+  "events": 796,
+  "checks": ["Participant count, event coding and unique identifiers", "Independent direct daily aggregation validates all exposure windows and rainfall in 60 records", "All exposure measurements precede follow-up and the generated delivery interval", "Independent rescaling refit verifies odds ratios and uncertainty per five degrees C", "Primary likelihood score is numerically zero and model matrix is full rank", "Linear-program separation check correctly classifies complete, quasi and overlapping examples", "All 26 original result files and both source data files match the frozen archive"],
+  "original_results_preserved": 26,
+  "primary_input_md5": {
+    "D:/Heat-Health-Methods-RPython/data/illustrative_cohort.csv": "248b355ad76236922e8046d78cd8405a",
+    "D:/Heat-Health-Methods-RPython/data/weather.csv": "86e766b60657d4229caf0083f8a780a6"
+  }
+}

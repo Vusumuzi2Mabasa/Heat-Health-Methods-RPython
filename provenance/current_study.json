@@ -1,0 +1,10 @@
+{
+  "version": "2.0.0",
+  "entry": "run_association.R",
+  "configuration": "association_config.json",
+  "analysis": "results/association",
+  "original_study": "archive/methods-study-v1",
+  "original_commit": "47a46ae",
+  "analyses_in_R": true,
+  "confidence_intervals": "HC3 frequentist Wald; not posterior odds"
+}

@@ -1,0 +1,10 @@
+{
+  "passed": true,
+  "matched_records": 1500,
+  "scenario_labels_preserved": true,
+  "record_counts_identical": true,
+  "main_fits_without_errors": true,
+  "prediction_records_per_language": 12,
+  "synthetic_health_data_only": true,
+  "python": "3.12.14"
+}

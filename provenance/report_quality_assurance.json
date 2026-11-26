@@ -1,14 +1,14 @@
 {
   "document": "report/Heat_Health_Manuscript.docx",
   "author": "Vusumuzi Mabasa",
-  "pages": 12,
-  "figures": 6,
-  "tables": 5,
-  "native_math_objects": 32,
-  "rendered_with": "Microsoft Word 2021 PDF export and bundled Poppler PNG rendering at 105 dpi",
-  "packaged_renderer_limitation": "render_docx.py could not find LibreOffice soffice.exe; native Word was used as the renderer",
-  "visual_review": "All 12 final page images reviewed; no clipped content or broken equations; weather and response figure encoding corrected and rechecked",
-  "health_data": "Entirely synthetic",
-  "weather": "Public ERA5 reanalysis through Open-Meteo",
-  "document_sha256": "20512817e607e03e5e8021486707cf1477d1bdc15fd5c2d2f66676654c69d968"
+  "pages": 11,
+  "native_flextable_tables": 5,
+  "figures": 5,
+  "native_math_objects": 11,
+  "all_pages_reviewed": true,
+  "render_method": "Microsoft Word PDF export and Poppler PNG inspection at 105 dpi",
+  "packaged_renderer_limitation": "LibreOffice absent; native Word rendering used",
+  "study": "Applied R association analysis",
+  "original_release_archived": "archive/methods-study-v1",
+  "word_sha256": "5063cc753c58ba5dd2cdeddf0c46a01c1e380c95fccc65e6b215fff517aee911"
 }

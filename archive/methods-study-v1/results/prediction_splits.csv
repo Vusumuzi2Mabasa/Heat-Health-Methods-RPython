@@ -1,0 +1,6 @@
+split,n,events
+train,2355,236
+temporal,1297,154
+geographic,1209,170
+combined_shift,610,78
+excluded_transition,420,49

@@ -1,0 +1,16 @@
+{
+  "baseline_risk": 0.13251990615127174,
+  "cooling_risk": 0.1256591517811563,
+  "risk_difference": -0.006860754370115418,
+  "truth_baseline_risk": 0.13186617058368272,
+  "truth_cooling_risk": 0.12180556890278649,
+  "truth_risk_difference": -0.010060601680896238,
+  "lower": -0.014060910826019634,
+  "upper": 0.0003394020857887996,
+  "delta_method_se": 0.0036735492121960293,
+  "interval_method": "Analytic delta method conditional on simulated population and weather",
+  "eligible": 5891,
+  "total": 6000,
+  "preterm_events": 796,
+  "scope": "Hypothetical two-degree exposure reduction; full latent schedules used only for explanatory simulation standardisation, not prospective prediction"
+}

@@ -1,0 +1,15 @@
+{
+  "author": "Vusumuzi Mabasa",
+  "source_cohort": "data/illustrative_cohort.csv",
+  "source_weather": "data/weather.csv",
+  "analysis_population": "All 6000 synthetic pregnancies ongoing at the start of gestational week 20",
+  "primary_exposure": "Mean daily maximum temperature during the 14 completed days before week 20",
+  "exposure_increment_c": 5,
+  "primary_outcome": "Generated delivery before week 37; 0 no event through week 36, 1 event during weeks 20 to 36",
+  "secondary_outcome": "Generated delivery before week 34; exploratory",
+  "adjustment": ["maternal age per 5 years", "smoking", "deprivation", "site", "log one plus mean rainfall over the same 14 days", "annual sine and cosine", "calendar year"],
+  "primary_inference": "Frequentist logistic regression with HC3 sandwich standard errors and two-sided 95% Wald confidence intervals",
+  "sensitivity": ["natural cubic splines with 3 degrees of freedom for heat and age", "7 day exposure windows", "site specific annual seasonal terms", "omit the 5 highest Cook distances as influence sensitivity only"],
+  "missing_data": "Report observed missingness; complete records for the specified model; never manufacture missingness or impute generator-only truth",
+  "scope": "Applied association analysis in R; public ERA5 weather and synthetic health outcomes; no method performance experiment or posterior estimates"
+}

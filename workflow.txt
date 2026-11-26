@@ -1,44 +1,27 @@
-HEAT HEALTH METHODS R AND PYTHON
-Author Vusumuzi Mabasa
-SIMULATED HEALTH DATA ONLY
+R ASSOCIATION STUDY WORKFLOW
+Vusumuzi Mabasa
+All health outcomes are simulated.
 
 
-## Reproducing the study
+## Reproducing the R association study
 
-Use Python 3.12, R 4.5.1 and Quarto. R packages used for figures and prediction are ggplot2, ranger, gbm, glmnet and pROC; their installed versions are recorded in provenance. The main survival analysis uses base R. The included ERA5 CSV allows network-free analysis; `--download-weather` refreshes the source through the public API and re-runs download QC.
+Use R 4.5.1 or a compatible version. Required packages are jsonlite, sandwich, car, lpSolve, gtsummary, flextable, officer, ggplot2, dplyr, broom, knitr and rmarkdown. The installed versions and complete R session are recorded with the association outputs. Quarto is needed only for Word rendering.
 
+```r
+install.packages(c('jsonlite','sandwich','car','lpSolve','gtsummary',
+                   'flextable','officer','ggplot2','dplyr','broom',
+                   'knitr','rmarkdown'), repos='https://cloud.r-project.org')
+```
 
-python -m venv .venv
-# Linux or macOS
-source .venv/bin/activate
-# Windows PowerShell instead: .venv\Scripts\Activate.ps1
-python -m pip install -r requirements.txt
-Rscript --vanilla -e "install.packages(c('ggplot2','ranger','gbm','glmnet','pROC'), repos='https://cloud.r-project.org')"
-python run_workflow.py --smoke
-python run_workflow.py --render
+```bash
+Rscript --vanilla run_association.R --analysis-only
+Rscript --vanilla run_association.R
+Rscript --vanilla run_association.R --render
+```
 
+The first command runs preprocessing, association models, diagnostics and data-integrity checks. The second also produces gtsummary and flextable objects, ggplot figures and the manuscript source. The third renders the Word manuscript. Set QUARTO_PATH to the Quarto executable if it is not on PATH. The workflow does not regenerate the original cohort or run repeated method comparisons. Rendering uses R with user profile and environment files disabled.
 
-On Windows, supply `--rscript "C:/Program Files/R/R-4.5.1/bin/Rscript.exe"` and `--quarto "C:/Program Files/RStudio/resources/app/bin/quarto/bin/quarto.exe"` if these executables are not on PATH. Full regeneration is substantially slower than the smoke test. Keep R startup files disabled with `--vanilla`; the workflow also disables user environment/profile files for report rendering. Do not overwrite prior releases when changing scenarios: copy configuration and results into a versioned release directory first.
+The ordered implementation is R/01_preprocess.R, R/02_associations.R, R/03_tables_figures.R and R/04_manuscript.R. Configuration is in association_config.json. R/validate_association.R checks source preservation, timing, direct weather aggregation, model convergence, exposure-unit scaling and the separation diagnostic. These are software and data checks, not the research objectives.
 
-The full pipeline runs `generate.py`, independent `analyse.py` and `analyse.R`, the prediction scripts, invariant tests, numerical comparisons, `figures.R`, and `write_manuscript.py`. These scripts include the full implementation; the report is not a substitute for the executable code. Continuous integration is configured for a two-replicate smoke test. A configured CI file does not imply a remote CI run has been observed.
+The original methods study, including its independent R/Python comparisons, is preserved in [archive/methods-study-v1](archive/methods-study-v1/README.md). Its results are not combined with the association findings. The root-level historical scripts remain for provenance; run_association.R is the main entry point.
 
-Outputs: `results/simulation_summary.csv` contains all simulation metrics; `results/r_prediction_metrics.csv` and `results/prediction_metrics.csv` contain R and Python prediction results; `results/added_value.csv` contains paired AUC comparisons; `results/validation.json` records numerical checks; `report/Heat_Health_Manuscript.docx` is the Word manuscript. All health data and reported health effects are simulated.
-
-
-{
-  "fit_records_per_language": 1500,
-  "converged_r": 1500,
-  "converged_python": 1500,
-  "max_absolute_differences": {
-    "estimate": 9.680473156414848e-08,
-    "se": 1.7921306068036102e-06,
-    "loglik": 9.322320693172514e-12,
-    "all_coefficients_replicate1": 4.7365912081431816e-08
-  },
-  "landmark_logistic_max_coefficient_difference": 2.6766588945292824e-11,
-  "weather_rows": 13152,
-  "independent_cohorts": 100,
-  "scenario_datasets": 500,
-  "oracle_reuse": "Same fit as nonlinear in null, moderate and nonlinear scenarios because exposure and rows are identical",
-  "scope": "Numerical reproducibility validates implementation, not clinical validity"
-}

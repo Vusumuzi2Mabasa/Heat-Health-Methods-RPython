@@ -1,0 +1,17 @@
+{
+  "fit_records_per_language": 1500,
+  "converged_r": 1500,
+  "converged_python": 1500,
+  "max_absolute_differences": {
+    "estimate": 9.680473156414848e-08,
+    "se": 1.7921306068036102e-06,
+    "loglik": 9.322320693172514e-12,
+    "all_coefficients_replicate1": 4.7365912081431816e-08
+  },
+  "landmark_logistic_max_coefficient_difference": 2.6766588945292824e-11,
+  "weather_rows": 13152,
+  "independent_cohorts": 100,
+  "scenario_datasets": 500,
+  "oracle_reuse": "Same fit as nonlinear in null, moderate and nonlinear scenarios because exposure and rows are identical",
+  "scope": "Numerical reproducibility validates implementation, not clinical validity"
+}

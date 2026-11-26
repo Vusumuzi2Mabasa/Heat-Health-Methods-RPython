@@ -1,0 +1,8 @@
+"Check","Finding","Interpretation"
+"Convergence and rank","Converged; rank 14 of 14","Finite maximum likelihood estimates and estimable design"
+"Separation","No complete or quasi separation detected","Linear programming diagnostic; not only a convergence check"
+"Heat linearity on logit scale","Spline versus linear likelihood ratio p 0.101","Prespecified functional-form sensitivity; no automatic model selection"
+"Age linearity on logit scale","Spline versus linear likelihood ratio p 0.906","Prespecified functional-form sensitivity; age need not be normally distributed"
+"Collinearity","Maximum adjusted GVIF 2.27","Report term degrees of freedom; adjusted GVIF is not the raw one-df VIF"
+"Grouped goodness of fit","HL chi-square 10.20 on 8 df; p 0.251","Ten groups; grouping-dependent in-sample diagnostic, not external validation"
+"Influential observations","747 above Cook distance 4/N; five largest examined","Primary analysis retains every eligible pregnancy; deletion is sensitivity only"
