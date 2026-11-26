@@ -268,7 +268,7 @@ The full pipeline runs `generate.py`, independent `analyse.py` and `analyse.R`, 
 
 Outputs: `results/simulation_summary.csv` contains all simulation metrics; `results/r_prediction_metrics.csv` and `results/prediction_metrics.csv` contain R and Python prediction results; `results/added_value.csv` contains paired AUC comparisons; `results/validation.json` records numerical checks; `report/Heat_Health_Manuscript.docx` is the Word manuscript. All health data and reported health effects are simulated.
 '''
-(ROOT/'README.md').write_text(f'# {title}\n\n**{subtitle}**\n\n**Vusumuzi Mabasa · 26 November 2026**\n\n**Simulation study. Public weather with entirely synthetic pregnancies and outcomes.**\n\n'+body.replace('FIGURES/','figures/')+repro,encoding='utf-8')
+(ROOT/'README.md').write_text(f'# {title}\n\n**{subtitle}**\n\n**Vusumuzi Mabasa · 26 November 2026**\n\n**Simulation study. Public weather with entirely synthetic pregnancies and outcomes.**\n\n[Word manuscript](report/Heat_Health_Manuscript.docx) · [Quarto manuscript source](report/Heat_Health_Manuscript.qmd) · [Results and validation](results) · [Workflow commands](workflow.txt)\n\n'+body.replace('FIGURES/','figures/')+repro,encoding='utf-8')
 qmd=f'''---
 title: "{title}"
 subtitle: "{subtitle}"

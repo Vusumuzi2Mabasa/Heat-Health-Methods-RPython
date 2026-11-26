@@ -6,6 +6,8 @@
 
 **Simulation study. Public weather with entirely synthetic pregnancies and outcomes.**
 
+[Word manuscript](report/Heat_Health_Manuscript.docx) · [Quarto manuscript source](report/Heat_Health_Manuscript.qmd) · [Results and validation](results) · [Workflow commands](workflow.txt)
+
 ## Abstract
 
 **Background.** Heat and pregnancy research requires methods that respect gestational risk sets, delayed exposure effects and the distinction between association and prediction. This study evaluated such methods using public historical weather and entirely synthetic pregnancies.
