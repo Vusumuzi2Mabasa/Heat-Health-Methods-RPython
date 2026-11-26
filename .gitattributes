@@ -1,2 +1,4 @@
 # Preserve exact bytes for the release checksum manifest across platforms.
 * -text
+# CRLF is a valid line ending in the preserved Windows-generated text files.
+* whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
